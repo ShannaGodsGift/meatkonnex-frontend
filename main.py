@@ -25,6 +25,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def root():
+    return {"message": "Welcome to the MeatKonnex API"}
+
 def get_db():
     db = SessionLocal()
     try:
