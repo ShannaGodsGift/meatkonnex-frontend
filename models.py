@@ -5,30 +5,30 @@ from datetime import datetime
 Base = declarative_base()
 
 class Animal(Base):
-    __tablename__ = "animal"
+    __tablename__ = "animals"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     total_weight_kg = Column(Float, nullable=False)
     purchase_price_jmd = Column(Float, nullable=False)
-    meat_parts = relationship("MeatPart", back_populates="animal")
+    meat_parts = relationship("MeatPart", back_populates="animal", cascade="all, delete-orphan")
 
 class MeatPart(Base):
     __tablename__ = "meat_parts"
     id = Column(Integer, primary_key=True, index=True)
-    animal_id = Column(Integer, ForeignKey("animal.id"), nullable=False)
+    animal_id = Column(Integer, ForeignKey("animals.id"), nullable=False)
     part_name = Column(String, nullable=False)
     weight_lb = Column(Float, nullable=False)
     price_per_lb_jmd = Column(Float, nullable=False)
     animal = relationship("Animal", back_populates="meat_parts")
-    inventory_items = relationship("Inventory", back_populates="meat_part")
-    order_items = relationship("OrderItem", back_populates="meat_part")
+    inventory_items = relationship("Inventory", back_populates="meat_part", cascade="all, delete-orphan")
+    order_items = relationship("OrderItem", back_populates="meat_part", cascade="all, delete-orphan")
 
 class SeasoningPackage(Base):
     __tablename__ = "seasoning_packages"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
     ingredients = Column(String, nullable=False)
-    inventory_items = relationship("Inventory", back_populates="seasoning_package")
+    inventory_items = relationship("Inventory", back_populates="seasoning_package", cascade="all, delete-orphan")
 
 class Inventory(Base):
     __tablename__ = "inventory"
@@ -53,13 +53,13 @@ class Order(Base):
     payment_status = Column(String, default="unpaid")
     date_ordered = Column(DateTime, default=datetime.utcnow)
     is_paid = Column(Boolean, default=False)
-    items = relationship("OrderItem", back_populates="order")
+    items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
 
 class OrderItem(Base):
     __tablename__ = "order_items"
     id = Column(Integer, primary_key=True, index=True)
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
-    meat_part_id = Column(Integer, ForeignKey("meat_parts.id"))
+    meat_part_id = Column(Integer, ForeignKey("meat_parts.id"), nullable=False)
     pounds_ordered = Column(Float, nullable=False)
     seasoned = Column(Boolean, default=False)
     seasonings = Column(String)
